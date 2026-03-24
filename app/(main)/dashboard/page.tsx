@@ -134,12 +134,20 @@ export default function DashboardPage() {
   }
 
   const handleConfirmDelete = async () => {
-    if (!selectedProduct) return
-    setDeleting(true)
-    await deleteProduct(selectedProduct.id)
-    setDeleting(false)
-    deleteModal.close()
-  }
+      if (!selectedProduct) return
+      setDeleting(true)
+      
+      try {
+        await deleteProduct(selectedProduct.id)
+        deleteModal.close() // Solo cerramos si tuvo éxito
+      } catch (err: any) {
+        console.error("Fallo al eliminar:", err)
+        // Aquí a futuro puedes poner un toast de error (ej. toast.error(err.message))
+        alert(err.message) 
+      } finally {
+        setDeleting(false) // Siempre quitamos el estado de carga, falle o no
+      }
+    }
 
   const handleCreateFieldChange = (field: keyof ProductFormData, value: string) =>
     setCreateForm((prev) => ({ ...prev, [field]: value }))
