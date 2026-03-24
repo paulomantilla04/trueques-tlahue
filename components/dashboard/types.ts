@@ -1,10 +1,14 @@
+
 export type ProductCondition = "new" | "like_new" | "good" | "fair" | "poor"
+
+export type ProductStatus = "active" | "reserved" | "sold" | "pending_approval" | "rejected"
 
 export type Product = {
   id: string
   title: string
   description: string
   condition: ProductCondition
+  status: ProductStatus 
   includedItems: string
   price: number
   imageUrl: string

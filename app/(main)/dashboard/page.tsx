@@ -1,36 +1,14 @@
-// app/(main)/dashboard/page.tsx
-
 "use client"
 
-import { useState, type FormEvent, useEffect } from "react"
+import { useState, type FormEvent } from "react"
 import { useOverlayState } from "@heroui/react"
 import { ProductCard } from "@/components/dashboard/product-card"
 import { CreateProductModal } from "@/components/dashboard/create-product-modal"
 import { EditProductModal } from "@/components/dashboard/edit-product-modal"
 import { DeleteProductModal } from "@/components/dashboard/delete-product-modal"
 import type { Product, ProductFormData, ProductFormErrors } from "@/components/dashboard/types"
-import { createClient } from "@/lib/supabase/client"
-
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: "p-1",
-    title: "Bicicleta de ruta",
-    description: "Bicicleta ligera ideal para ciudad y trayectos largos.",
-    condition: "good",
-    includedItems: "Casco, kit de herramientas",
-    price: 3200,
-    imageUrl: "/logo.svg",
-  },
-  {
-    id: "p-2",
-    title: "Teclado mecánico",
-    description: "Switches lineales, formato 75%, retroiluminación RGB.",
-    condition: "like_new",
-    includedItems: "Cable USB-C, keycaps extra",
-    price: 1800,
-    imageUrl: "/logo.svg",
-  },
-]
+import { useProfile } from "@/hooks/useProfile"
+import { useUserProducts } from "@/hooks/useUserProducts"
 
 const emptyForm = (): ProductFormData => ({
   title: "",
@@ -92,7 +70,8 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 }
 
 export default function DashboardPage() {
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS)
+  const { profile } = useProfile()
+  const { products, loading, addProduct, updateProduct, deleteProduct } = useUserProducts()
 
   const createModal = useOverlayState()
   const editModal = useOverlayState()
@@ -106,21 +85,6 @@ export default function DashboardPage() {
   const [savingEdit, setSavingEdit] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  
-  const supabase = createClient()
-  const [userName, setUserName] = useState<string>("Usuario")
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-         const { data: { user } } = await supabase.auth.getUser()
-         if (user) {
-           const name = "Usuario"
-           setUserName(user.user_metadata?.display_name || name)
-         }
-       }
-       
-      fetchUser()
-  }, [supabase])
 
   const openCreateModal = () => {
     setCreateForm(emptyForm())
@@ -147,20 +111,7 @@ export default function DashboardPage() {
     if (Object.keys(errors).length > 0) return
 
     setSavingCreate(true)
-    await new Promise((r) => setTimeout(r, 600)) // TODO: Supabase insert
-
-    setProducts((prev) => [
-      {
-        id: String(Date.now()),
-        title: createForm.title.trim(),
-        description: createForm.description.trim(),
-        condition: createForm.condition,
-        includedItems: createForm.includedItems.trim(),
-        price: Number(createForm.price),
-        imageUrl: createForm.imagePreviewUrl || "/logo.svg",
-      },
-      ...prev,
-    ])
+    await addProduct(createForm)
     setSavingCreate(false)
     createModal.close()
   }
@@ -174,23 +125,7 @@ export default function DashboardPage() {
     if (Object.keys(errors).length > 0) return
 
     setSavingEdit(true)
-    await new Promise((r) => setTimeout(r, 600)) // TODO: Supabase update
-
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id !== selectedProduct.id
-          ? p
-          : {
-              ...p,
-              title: editForm.title.trim(),
-              description: editForm.description.trim(),
-              condition: editForm.condition,
-              includedItems: editForm.includedItems.trim(),
-              price: Number(editForm.price),
-              imageUrl: editForm.imagePreviewUrl || p.imageUrl,
-            }
-      )
-    )
+    await updateProduct(selectedProduct.id, editForm)
     setSavingEdit(false)
     editModal.close()
   }
@@ -198,8 +133,7 @@ export default function DashboardPage() {
   const handleConfirmDelete = async () => {
     if (!selectedProduct) return
     setDeleting(true)
-    await new Promise((r) => setTimeout(r, 400)) // TODO: Supabase delete
-    setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id))
+    await deleteProduct(selectedProduct.id)
     setDeleting(false)
     deleteModal.close()
   }
@@ -222,13 +156,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      {/* ── Page content ── */}
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-6">
-        {/* Header row */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">
-              Hola, <span className="text-orange-500">{userName}</span>!
+              Hola, <span className="text-orange-500">{profile?.display_name || "Usuario"}</span>!
             </h1>
             <p className="mt-1 text-slate-500">Aquí podrás gestionar tus productos.</p>
           </div>
@@ -244,23 +176,29 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Product grid */}
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {products.length === 0 ? (
-            <EmptyState onAdd={openCreateModal} />
-          ) : (
-            products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onEdit={openEditModal}
-                onDelete={openDeleteModal}
-              />
-            ))
-          )}
-        </div>
+        {loading ? (
+          <div className="flex h-40 items-center justify-center">
+            <p className="animate-pulse text-slate-500">Cargando tus productos...</p>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {products.length === 0 ? (
+              <EmptyState onAdd={openCreateModal} />
+            ) : (
+              products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onEdit={openEditModal}
+                  onDelete={openDeleteModal}
+                />
+              ))
+            )}
+          </div>
+        )}
       </main>
 
+      {/* Modals continúan igual... */}
       <CreateProductModal
         modalState={createModal}
         form={createForm}
