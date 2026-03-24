@@ -14,6 +14,7 @@ import {
 } from "@heroui/react"
 import { CONDITION_OPTIONS } from "@/components/dashboard/constants"
 import type { ProductCondition, ProductFormData, ProductFormErrors } from "@/components/dashboard/types"
+import { useCategories } from "@/hooks/useCategories" // <-- IMPORTAMOS EL HOOK
 
 const montserrat = Montserrat({ subsets: ["latin"] })
 
@@ -30,6 +31,8 @@ export function ProductFormFields({
   onConditionChange: (value: ProductCondition) => void
   onFileChange: (file: File | null) => void
 }) {
+  const { categories, loading } = useCategories() // <-- TRAEMOS LAS CATEGORÍAS
+
   return (
     <>
       <TextField isInvalid={errors.title !== undefined} className={`${montserrat.className}`}>
@@ -52,6 +55,37 @@ export function ProductFormFields({
         />
         <FieldError>{errors.description}</FieldError>
       </TextField>
+
+      {/* --- NUEVO SELECTOR DE CATEGORÍA --- */}
+      <div className="flex flex-col">
+        <Select
+          selectedKey={form.categoryId || null}
+          onSelectionChange={(key: Key | null) => {
+            if (key !== null) onInputChange("categoryId", String(key))
+          }}
+          className={`${montserrat.className}`}
+          isDisabled={loading}
+        >
+          <Label className='text-black font-semibold'>Categoría {loading && <span className="text-slate-400 font-normal">(Cargando...)</span>}</Label>
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox items={categories}>
+              {(item) => (
+                <ListBoxItem id={item.id} textValue={item.name} className={`text-black ${montserrat.className}`}>
+                  {item.name}
+                </ListBoxItem>
+              )}
+            </ListBox>
+          </Select.Popover>
+        </Select>
+        {errors.categoryId !== undefined && (
+          <p className={`text-sm text-rose-600 mt-1 ${montserrat.className}`}>{errors.categoryId}</p>
+        )}
+      </div>
+      {/* ----------------------------------- */}
 
       <Select
         selectedKey={form.condition}
@@ -76,7 +110,7 @@ export function ProductFormFields({
         </Select.Popover>
       </Select>
       {errors.condition !== undefined && (
-        <p className="text-sm text-rose-600">{errors.condition}</p>
+        <p className={`text-sm text-rose-600 ${montserrat.className}`}>{errors.condition}</p>
       )}
 
       <TextField className={`${montserrat.className}`}>

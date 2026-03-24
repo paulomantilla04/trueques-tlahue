@@ -47,7 +47,7 @@ export function useUserProducts() {
           status:       p.status,
           includedItems: p.included_items ?? "",
           price:        Number(p.price),
-          imageUrl:     p.product_images?.[0]?.url ?? "/placeholder-image.png",
+          imageUrl:     p.product_images?.[0]?.url ?? "/placeholder-image.jpg",
         }))
       )
     }

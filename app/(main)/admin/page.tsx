@@ -3,10 +3,12 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAdminProducts } from "@/hooks/useAdminProducts"
 import { CONDITION_LABELS } from "@/components/dashboard/constants"
 import { Montserrat } from "next/font/google"
+import { useRouter } from "next/navigation"
+import { useProfile } from "@/hooks/useProfile"
 
 const montserrat = Montserrat({ subsets: ["latin"] })
 
@@ -133,7 +135,25 @@ function ProductCard({
 }
 
 export default function AdminPage() {
+  const router = useRouter()
+  const { profile, loading: profileLoading } = useProfile()
   const { products, loading, error, approveProduct, rejectProduct } = useAdminProducts()
+  
+  useEffect(() => {
+      // Si ya terminó de cargar el perfil y NO es admin, para fuera
+      if (!profileLoading && profile?.role !== "admin") {
+        router.push("/dashboard") // O a la home "/"
+      }
+    }, [profile, profileLoading, router])
+  
+  if (profileLoading || profile?.role !== "admin") {
+      return (
+        <div className={`min-h-screen bg-slate-100 flex items-center justify-center ${montserrat.className}`}>
+          <p className="animate-pulse text-slate-500 font-medium">Verificando permisos...</p>
+        </div>
+      )
+    }
+  
 
   return (
     <div className={`min-h-screen bg-slate-100 ${montserrat.className}`}>

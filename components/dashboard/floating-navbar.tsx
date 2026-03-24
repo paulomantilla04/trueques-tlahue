@@ -5,22 +5,26 @@ import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Link, Button } from "@heroui/react"
 import { createClient } from "@/lib/supabase/client"
+import { useProfile } from "@/hooks/useProfile" // <-- Importamos el hook
 
 type NavItem = {
   label: string
   href: string
+  adminOnly?: boolean // <-- Nuevo campo opcional
 }
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Inicio",     href: "/"          },
   { label: "Perfil",     href: "/profile"   },
   { label: "Dashboard",  href: "/dashboard" },
+  { label: "Admin",      href: "/admin", adminOnly: true }, // <-- Nuestro link protegido
 ]
 
 export function FloatingNavbar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const { profile } = useProfile() // <-- Traemos la info del usuario logueado
   
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -30,6 +34,11 @@ export function FloatingNavbar() {
     router.refresh()
     router.push("/login")
   }
+
+  // Filtramos los items: Si pide ser admin, revisamos que el rol coincida
+  const visibleNavItems = NAV_ITEMS.filter(
+    (item) => !item.adminOnly || profile?.role === "admin"
+  )
 
   return (
     <nav className="fixed left-1/2 top-5 z-50 w-[min(94vw,780px)] -translate-x-1/2">
@@ -47,7 +56,7 @@ export function FloatingNavbar() {
 
         {/* Enlaces y Acciones */}
         <div className="flex items-center gap-1">
-          {NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link
