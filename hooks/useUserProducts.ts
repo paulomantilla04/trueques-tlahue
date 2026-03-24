@@ -73,65 +73,75 @@ export function useUserProducts() {
 
   // Subir imagen al bucket
   const uploadProductImage = async (productId: string, file: File) => {
-    if (!profile?.id) return null
-
-    const fileExt = file.name.split('.').pop()
-    const filePath = `${profile.id}/${productId}/${Date.now()}.${fileExt}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file)
-
-    if (uploadError) {
-      console.error("Error subiendo imagen:", uploadError)
-      return null
+      if (!profile?.id) throw new Error("No hay perfil activo para subir la imagen");
+  
+      const fileExt = file.name.split('.').pop();
+      // Validar que realmente sea un archivo
+      if (!fileExt) throw new Error("El archivo no tiene una extensión válida");
+  
+      const filePath = `${profile.id}/${productId}/${Date.now()}.${fileExt}`;
+  
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+  
+      if (uploadError) {
+        console.error("Error real de Storage:", uploadError);
+        throw new Error(`Fallo en Storage: ${uploadError.message}`);
+      }
+  
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+  
+      return publicUrl;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath)
-
-    return publicUrl
-  }
+  
 
   const addProduct = async (form: ProductFormData) => {
-    if (!profile?.id) throw new Error("No hay perfil activo")
-
-    // 1. Insertar el producto en la BD
-    const { data: newProduct, error: productError } = await supabase
-      .from("products")
-      .insert({
-        seller_id: profile.id,
-        category_id: form.categoryId, // TODO: Cambiar cuando tengamos el select
-        title: form.title.trim(),
-        description: form.description.trim(),
-        condition: form.condition,
-        included_items: form.includedItems.trim(),
-        price: Number(form.price),
-        status: "pending_approval" // Estado inicial
-      })
-      .select("id")
-      .single()
-
-    if (productError || !newProduct) {
-      throw new Error("Error creando producto: " + productError?.message)
-    }
-
-    // 2. Si hay imagen, subirla a Storage y enlazarla en product_images
-    if (form.imageFile) {
-      const imageUrl = await uploadProductImage(newProduct.id, form.imageFile)
-      if (imageUrl) {
-        await supabase.from("product_images").insert({
-          product_id: newProduct.id,
-          url: imageUrl,
-          sort_order: 0
+      if (!profile?.id) throw new Error("No hay perfil activo");
+  
+      // 1. Insertar el producto en la BD
+      const { data: newProduct, error: productError } = await supabase
+        .from("products")
+        .insert({
+          seller_id: profile.id,
+          category_id: form.categoryId,
+          title: form.title.trim(),
+          description: form.description.trim(),
+          condition: form.condition,
+          included_items: form.includedItems.trim(),
+          price: Number(form.price),
+          status: "pending_approval"
         })
+        .select("id")
+        .single();
+  
+      if (productError || !newProduct) {
+        throw new Error("Error creando producto: " + productError?.message);
       }
+  
+      // 2. Si hay imagen, subirla a Storage y enlazarla en product_images
+      if (form.imageFile) {
+        const imageUrl = await uploadProductImage(newProduct.id, form.imageFile);
+        
+        if (imageUrl) {
+          const { error: imageError } = await supabase.from("product_images").insert({
+            product_id: newProduct.id,
+            url: imageUrl,
+            sort_order: 0
+          });
+  
+          if (imageError) {
+            throw new Error("Error guardando la URL en BD: " + imageError.message);
+          }
+        }
+      }
+  
+      await fetchProducts();
     }
 
-    await fetchProducts()
-  }
-
+  
   const updateProduct = async (id: string, form: ProductFormData) => {
     // 1. Actualizar datos base del producto (volverá a estado "pending_approval" al editar, 
     // idealmente se debería hacer si cambias el título/descripción)
