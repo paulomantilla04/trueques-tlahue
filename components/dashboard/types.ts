@@ -5,16 +5,18 @@ export type ProductStatus = "active" | "reserved" | "sold" | "pending_approval" 
 
 export type Product = {
   id: string
+  categoryId: string // <-- Nuevo campo
   title: string
   description: string
   condition: ProductCondition
-  status: ProductStatus 
+  status: ProductStatus
   includedItems: string
   price: number
   imageUrl: string
 }
 
 export type ProductFormData = {
+  categoryId: string // <-- Nuevo campo
   title: string
   description: string
   condition: ProductCondition
@@ -24,4 +26,4 @@ export type ProductFormData = {
   imagePreviewUrl: string
 }
 
-export type ProductFormErrors = Partial<Record<"title" | "description" | "condition" | "price", string>>
+export type ProductFormErrors = Partial<Record<"categoryId" | "title" | "description" | "condition" | "price", string>>

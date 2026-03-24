@@ -3,8 +3,7 @@ import { createClient } from "@/lib/supabase/client"
 import type { Product, ProductFormData } from "@/components/dashboard/types"
 import { useProfile } from "@/hooks/useProfile"
 
-// ID temporal para cumplir con la constraint NOT NULL de category_id
-const DEFAULT_CATEGORY_ID = "11111111-0000-0000-0000-000000000001" 
+
 
 export function useUserProducts() {
   const supabase = createClient()
@@ -25,6 +24,7 @@ export function useUserProducts() {
       .from("products")
       .select(`
         id,
+        category_id,
         title,
         description,
         condition,
@@ -40,6 +40,7 @@ export function useUserProducts() {
       setProducts(
         data.map((p: any) => ({
           id:           p.id,
+          categoryId:   p.category_id,
           title:        p.title,
           description:  p.description,
           condition:    p.condition,
@@ -101,7 +102,7 @@ export function useUserProducts() {
       .from("products")
       .insert({
         seller_id: profile.id,
-        category_id: DEFAULT_CATEGORY_ID, // TODO: Cambiar cuando tengamos el select
+        category_id: form.categoryId, // TODO: Cambiar cuando tengamos el select
         title: form.title.trim(),
         description: form.description.trim(),
         condition: form.condition,
@@ -137,6 +138,7 @@ export function useUserProducts() {
     const { error: updateError } = await supabase
       .from("products")
       .update({
+        category_id: form.categoryId,
         title: form.title.trim(),
         description: form.description.trim(),
         condition: form.condition,

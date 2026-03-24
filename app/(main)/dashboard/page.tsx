@@ -11,6 +11,7 @@ import { useProfile } from "@/hooks/useProfile"
 import { useUserProducts } from "@/hooks/useUserProducts"
 
 const emptyForm = (): ProductFormData => ({
+  categoryId: "",
   title: "",
   description: "",
   condition: "good",
@@ -23,6 +24,7 @@ const emptyForm = (): ProductFormData => ({
 function validateProductForm(form: ProductFormData): ProductFormErrors {
   const errors: ProductFormErrors = {}
 
+  if (!form.categoryId) errors.categoryId = "Selecciona una categoría."
   if (form.title.trim().length === 0) errors.title = "El título es obligatorio."
   if (form.description.trim().length === 0) errors.description = "La descripción es obligatoria."
   if (form.condition.trim().length === 0) errors.condition = "Selecciona una condición."
@@ -39,6 +41,7 @@ function validateProductForm(form: ProductFormData): ProductFormErrors {
 
 function productToForm(product: Product): ProductFormData {
   return {
+    categoryId: product.categoryId,
     title: product.title,
     description: product.description,
     condition: product.condition,
