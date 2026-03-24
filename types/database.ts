@@ -359,6 +359,7 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
           auth_user_id: string
@@ -366,6 +367,7 @@ export type Database = {
           created_at?: string
           display_name: string
           id?: string
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
           auth_user_id?: string
@@ -373,6 +375,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
       }
@@ -524,6 +527,7 @@ export type Database = {
             }
             Returns: string
           }
+      is_admin: { Args: never; Returns: boolean }
       open_dispute: {
         Args: { p_actor_id: string; p_transaction_id: string }
         Returns: undefined
@@ -543,8 +547,14 @@ export type Database = {
         | "invalidated"
       offer_type: "direct_buy" | "negotiation"
       product_condition: "new" | "like_new" | "good" | "fair" | "poor"
-      product_status: "active" | "reserved" | "sold"
+      product_status:
+        | "active"
+        | "reserved"
+        | "sold"
+        | "pending_approval"
+        | "rejected"
       transaction_status: "pending" | "completed" | "disputed"
+      user_role: "user" | "admin"
     }
     CompositeTypes: {
       barter_item_input: {
@@ -686,8 +696,15 @@ export const Constants = {
       ],
       offer_type: ["direct_buy", "negotiation"],
       product_condition: ["new", "like_new", "good", "fair", "poor"],
-      product_status: ["active", "reserved", "sold"],
+      product_status: [
+        "active",
+        "reserved",
+        "sold",
+        "pending_approval",
+        "rejected",
+      ],
       transaction_status: ["pending", "completed", "disputed"],
+      user_role: ["user", "admin"],
     },
   },
 } as const
