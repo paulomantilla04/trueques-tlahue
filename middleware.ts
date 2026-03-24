@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   // Caso B: Usuario que ya tiene sesión intentando ir al login o registro
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
