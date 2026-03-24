@@ -31,7 +31,8 @@ export function useAdminProducts() {
     }
 
     const mapped: Product[] = (data ?? []).map((p: any) => ({
-      id:           p.id,
+      id: p.id,
+      categoryId: p.category_id,
       title:        p.title,
       description:  p.description,
       condition:    p.condition,
