@@ -1,7 +1,13 @@
+import { FeaturedProducts } from '@/components/home/productsCarrusel';
+import { Header } from '../../components/home/hearder';
+import { ProductGrid } from '@/components/home/productGrid';
 export default function Home() {
+  
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-black font-sans ">
-      <h1 className="text-4xl text-white font-bold">Trueques Tlahue</h1>
+    <div className="min-h-screen  bg-[#FCF5F1]">
+      <Header/>
+      <FeaturedProducts/>
+     < ProductGrid/>
     </div>
   );
 }

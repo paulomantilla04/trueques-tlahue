@@ -6,9 +6,8 @@ import type { Category } from '@/types'
 
 export type CategoryWithChildren = Category & {
   children: Category[]
-}
-
-export function useCategories() {
+} 
+ export function useCategories() {
   const supabase = createClient()
   const [categories, setCategories] = useState<Category[]>([])
   const [tree, setTree]             = useState<CategoryWithChildren[]>([])
@@ -33,5 +32,5 @@ export function useCategories() {
       })
   }, [])
 
-  return { categories, tree, loading }
+  return { categories, tree, loading,  }
 }
