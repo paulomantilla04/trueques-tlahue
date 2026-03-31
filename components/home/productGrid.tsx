@@ -6,7 +6,9 @@ import { ProductCard } from "./productCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@heroui/react";
-import { FiltroPanel } from "./filterCategors";
+import { FiltroPanel } from "./filterCategories";
+import { ProductCardSkeleton } from "./productSkeletonCard";
+
 
 const categoryVisibles = 2;
 
@@ -130,7 +132,12 @@ export function ProductGrid() {
       </div>
 
       {(categoriesLoading || productsLoading) && (
-        <p className="mb-4 text-sm text-black/60">Cargando productos...</p>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          {[...Array(8)].map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+      
+        </div>
       )}
       {/**productops */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">

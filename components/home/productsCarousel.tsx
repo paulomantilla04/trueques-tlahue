@@ -5,6 +5,7 @@ import Image from "next/image"
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Card, Button } from "@heroui/react"
 import { useProducts } from "@/hooks/useProducts"
+import { FeaturedProductsSkeleton } from "./productsSkeletonCarousel"
 
 
 type ProductFull = ReturnType<typeof useProducts>['products'][0]
@@ -28,7 +29,8 @@ export function FeaturedProducts() {
     }
   }, [products])
 
-  if (loading || shuffledProducts.length === 0) return null
+  if (loading) return <FeaturedProductsSkeleton />
+  if (shuffledProducts.length === 0) return null
 
   const totalSlides = shuffledProducts.length
   const main = shuffledProducts[currentSlide]

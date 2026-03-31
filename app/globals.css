@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+html {
+    scrollbar-gutter: stable;
+}
 
 :root {
   --background: #FCF5F1;

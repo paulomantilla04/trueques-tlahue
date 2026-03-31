@@ -91,7 +91,7 @@ function ProductCard({
             ${product.price.toLocaleString("es-MX")}
           </span>
           {product.includedItems && (
-            <span className="max-w-[140px] truncate text-right text-xs text-slate-400">
+            <span className="max-w-35 truncate text-right text-xs text-slate-400">
               Incluye: {product.includedItems}
             </span>
           )}
