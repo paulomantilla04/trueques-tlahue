@@ -26,7 +26,7 @@ export function FeaturedProducts() {
       const randomIdx = Math.floor(Math.random() * products.length)
       setSideProduct(products[randomIdx])
     }
-  }, [products.length])
+  }, [products])
 
   if (loading || shuffledProducts.length === 0) return null
 
@@ -37,7 +37,7 @@ export function FeaturedProducts() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
 
   return (
-    <section className="px-6 lg:px-52 py-4">
+    <section className="px-6 lg:px-40 py-4">
       <div className="flex gap-4 h-64 sm:h-72 md:h-80 lg:h-96">
 
         {/* Carrusel princiapl */}
@@ -58,24 +58,24 @@ export function FeaturedProducts() {
             className="object-contain z-10"
             priority
           />
-          <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-2xl px-5 py-3 flex items-center justify-between">
+          <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-3xl px-5 py-3 flex items-center justify-between">
             <div>
               <h3 className="text-white font-semibold text-base lg:text-lg">{main.title}</h3>
               <p className="text-white/90 text-sm">${main.price}</p>
             </div>
             <div className="absolute bottom-5 right-5 flex items-center gap-1.5">
-              <Button isIconOnly size="sm" variant="secondary" onPress={prevSlide}
-                className="w-8 h-8 min-w-8 rounded-full bg-white/20 backdrop-blur-md text-white border-none hover:bg-white/30"
+              <Button isIconOnly size="sm" variant="outline" onPress={prevSlide}
+                className="w-8 h-8 min-w-8 rounded-full bg-white/20 border-white/40 border-2 backdrop-blur-md text-white/60 hover:scale-90 transition-all duration-300"
                 aria-label="Anterior">
                 <FiChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-white text-xs px-2 font-medium bg-black/30 backdrop-blur-md rounded-full py-1">
+              <span className="text-white text-xs px-2 font-medium py-1">
                 {currentSlide + 1}/{totalSlides}
               </span>
-              <Button isIconOnly size="sm" variant="secondary" onPress={nextSlide}
-                className="w-8 h-8 min-w-8 rounded-full bg-white/20 backdrop-blur-md text-white border-none hover:bg-white/30"
+              <Button isIconOnly size="sm" variant="outline" onPress={nextSlide}
+                className="w-8 h-8 min-w-8 rounded-full bg-white/20 border-white/40 border-2 backdrop-blur-md text-white/60 hover:scale-90 transition-all duration-300"
                 aria-label="Siguiente">
-                <FiChevronRight className="w-4 h-4" />
+                <FiChevronRight className="w-4 h-4 font-extrabold" />
               </Button>
             </div>
           </div>

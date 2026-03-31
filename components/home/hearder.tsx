@@ -13,8 +13,8 @@ export function Header() {
 
       {/* Nav para pc */}
       <nav className="hidden md:flex items-center gap-6 px-16 ">
-        <a href="#" className="text-black text-xl hover:opacity-70 transition-opacity">Inicio</a>
-        <a href="#" className="text-black text-xl hover:opacity-70 transition-opacity">Catálogo</a>
+        <a href="#" className="text-black text-lg hover:opacity-70 transition-opacity">Inicio</a>
+        <a href="#" className="text-black text-lg hover:opacity-70 transition-opacity">Catálogo</a>
       </nav>
 
    
@@ -25,16 +25,16 @@ export function Header() {
       {/* Iconos */}
       <div className="hidden md:flex items-center gap-4 px-16">
         <Button isIconOnly variant="ghost" className="text-black hover:bg-transparent">
-          <FiSearch className="w-6 h-6" />
+          <FiSearch className="w-5 h-5" />
         </Button>
         <Button isIconOnly variant="ghost" className="text-black hover:bg-transparent">
-          <FiMessageSquare className="w-6 h-6" />
+          <FiMessageSquare className="w-5 h-5" />
         </Button>
         <Button isIconOnly variant="ghost" className="text-black hover:bg-transparent">
-          <FiHeart className="w-6 h-6" />
+          <FiHeart className="w-5 h-5" />
         </Button>
         <Button isIconOnly variant="ghost" className="text-black hover:bg-transparent">
-          <FiUser className="w-6 h-6" />
+          <FiUser className="w-5 h-5" />
         </Button>
       </div>
 
