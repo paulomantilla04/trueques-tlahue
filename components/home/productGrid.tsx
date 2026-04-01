@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ProductCard } from "./productCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
+import { useUser } from "@/hooks/useUser";
 import { Button } from "@heroui/react";
 import { FiltroPanel } from "./filterCategories";
 import { ProductCardSkeleton } from "./productSkeletonCard";
@@ -27,6 +28,7 @@ export function ProductGrid() {
   const { products, loading: productsLoading } = useProducts({
     categoryId: activeCategoryId,
   });
+  const { user } = useUser();
 
   //Maneja el like de los productos en estado local
   //
@@ -149,7 +151,7 @@ export function ProductGrid() {
             price={product.price ?? 0}
             image={product.product_images[0]?.url}
             isLiked={likedProducts.includes(product.id)}
-            onToggleLike={insertarLike}
+            onToggleLike={user ? insertarLike : undefined}
           />
         ))}
       </div>
