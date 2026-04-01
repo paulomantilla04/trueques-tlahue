@@ -1,25 +1,57 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "./productCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
-import { useUser } from "@/hooks/useUser";
+import { useProfile } from "@/hooks/useProfile";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useToggleFavorite } from "@/hooks/useToggleFavorite";
 import { Button } from "@heroui/react";
 import { FiltroPanel } from "./filterCategories";
 import { ProductCardSkeleton } from "./productSkeletonCard";
+import type { ProductFull } from "@/hooks/useProduct";
 
 
 const categoryVisibles = 2;
 
+function ProductGridItem({
+  product,
+  profileId,
+  isInitiallyLiked,
+  onClick,
+}: {
+  product: ProductFull;
+  profileId?: string;
+  isInitiallyLiked: boolean;
+  onClick: (id: string) => void;
+}) {
+  const { isFav, toggle } = useToggleFavorite(
+    product.id,
+    profileId ?? "",
+    isInitiallyLiked,
+  );
+
+  return (
+    <ProductCard
+      id={product.id}
+      name={product.title}
+      price={product.price ?? 0}
+      image={product.product_images[0]?.url ?? "/placeholder-image.jpg"}
+      isLiked={isFav}
+      onClick={onClick}
+      onToggleLike={profileId ? () => void toggle() : undefined}
+    />
+  );
+}
+
 export function ProductGrid() {
+  const router = useRouter();
   const [activeCategoryId, setActiveCategoryId] = useState<
     string | undefined
   >();
-
-  //Almacena los like de forma local
-  const [likedProducts, setLikedProducts] = useState<string[]>([]);
 
   const [showFilter, setShowFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -28,19 +60,9 @@ export function ProductGrid() {
   const { products, loading: productsLoading } = useProducts({
     categoryId: activeCategoryId,
   });
-  const { user } = useUser();
-
-  //Maneja el like de los productos en estado local
-  //
-  const insertarLike = (productId: string) => {
-    setLikedProducts((prev) =>
-      prev.includes(productId)
-        ? //quitar de favoritos
-          prev.filter((id) => id !== productId)
-        : //lo agrega si no esta
-          [...prev, productId],
-    );
-  };
+  const { profile } = useProfile();
+  const { favorites } = useFavorites(profile?.id ?? "");
+  const favoriteIds = new Set(favorites.map((favorite) => favorite.id));
 
   //clicks fuera del panel
   useEffect(() => {
@@ -144,14 +166,12 @@ export function ProductGrid() {
       {/**productops */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.title}
-            price={product.price ?? 0}
-            image={product.product_images[0]?.url}
-            isLiked={likedProducts.includes(product.id)}
-            onToggleLike={user ? insertarLike : undefined}
+          <ProductGridItem
+            key={`${product.id}-${favoriteIds.has(product.id) ? "fav" : "plain"}`}
+            product={product}
+            profileId={profile?.id}
+            isInitiallyLiked={favoriteIds.has(product.id)}
+            onClick={(id) => router.push(`/products/${id}`)}
           />
         ))}
       </div>
