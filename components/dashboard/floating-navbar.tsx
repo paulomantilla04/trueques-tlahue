@@ -64,7 +64,7 @@ export function FloatingNavbar() {
                 href={item.href}
                 className={
                   isActive
-                    ? "no-underline rounded-xl bg-orange-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
+                    ? "no-underline rounded-xl px-4 py-1.5 text-sm font-semibold text-orange-500"
                     : "no-underline rounded-xl px-4 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 }
               >

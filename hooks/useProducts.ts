@@ -20,8 +20,10 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
   const [products, setProducts] = useState<ProductFull[]>([])
   const [total, setTotal]       = useState(0)
   const [loading, setLoading]   = useState(true)
+  
 
   useEffect(() => {
+    console.log(' filters:', filters)  
     let cancelled = false
 
     // Defer the loading flag — same pattern as useProfile
@@ -34,7 +36,7 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
       .select(`
         *,
         product_images ( id, url, sort_order ),
-        profiles       ( id, display_name, avatar_url ),
+        profiles!products_seller_id_fkey     ( id, display_name, avatar_url ),
         categories     ( id, name, slug )
       `, { count: 'exact' })
       .eq('status', 'active')
@@ -56,12 +58,14 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
       })
     }
 
-    query.then(({ data, count, error }) => {
+  query.then(({ data, count, error }) => {
       if (cancelled) return
       if (!error && data) {
+        console.log('data:', data)
         setProducts(data as ProductFull[])
         setTotal(count ?? 0)
       }
+      console.log('error:', error)
       setLoading(false)
     })
 
