@@ -54,9 +54,9 @@ export default function FavoritesPage() {
     <section className="min-h-screen bg-[#FCF5F1] px-6 py-8 lg:px-40">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl text-black lg:px-4 lg:text-2xl">Mis favoritos</h1>
+          <h1 className="text-xl text-black font-extrabold lg:px-4 lg:text-3xl">Mis favoritos</h1>
           <p className="mt-2 text-sm text-black/60 lg:px-4">
-            Productos que guardaste para revisar despues.
+            Productos que guardaste para revisar después.
           </p>
         </div>
       </div>
@@ -78,9 +78,9 @@ export default function FavoritesPage() {
 
       {!isLoading && !isError && favorites.length === 0 && (
         <div className="rounded-3xl border border-black/10 bg-white/70 px-6 py-12 text-center">
-          <h2 className="text-lg text-black">Aun no tienes favoritos</h2>
+          <h2 className="text-lg text-black">Aún no tienes favoritos</h2>
           <p className="mt-2 text-sm text-black/60">
-            Guarda productos con el corazon para encontrarlos rapido despues.
+            Guarda productos con el corazón para encontrarlos rápido después.
           </p>
           <Button
             type="button"
