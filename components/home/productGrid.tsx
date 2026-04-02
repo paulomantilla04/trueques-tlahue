@@ -1,68 +1,52 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "./productCard";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts, type ProductCondition } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
-import { useProfile } from "@/hooks/useProfile";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useToggleFavorite } from "@/hooks/useToggleFavorite";
+import { useUser } from "@/hooks/useUser";
+import { useSearchFilters } from "@/components/home/SearchContext";
 import { Button } from "@heroui/react";
 import { FiltroPanel } from "./filterCategories";
 import { ProductCardSkeleton } from "./productSkeletonCard";
-import type { ProductFull } from "@/hooks/useProduct";
-
 
 const categoryVisibles = 2;
 
-function ProductGridItem({
-  product,
-  profileId,
-  isInitiallyLiked,
-  onClick,
-}: {
-  product: ProductFull;
-  profileId?: string;
-  isInitiallyLiked: boolean;
-  onClick: (id: string) => void;
-}) {
-  const { isFav, toggle } = useToggleFavorite(
-    product.id,
-    profileId ?? "",
-    isInitiallyLiked,
-  );
-
-  return (
-    <ProductCard
-      id={product.id}
-      name={product.title}
-      price={product.price ?? 0}
-      image={product.product_images[0]?.url ?? "/placeholder-image.jpg"}
-      isLiked={isFav}
-      onClick={onClick}
-      onToggleLike={profileId ? () => void toggle() : undefined}
-    />
-  );
+interface ProductGridProps {
+  search?: string
+  condition?: ProductCondition
 }
 
-export function ProductGrid() {
-  const router = useRouter();
-  const [activeCategoryId, setActiveCategoryId] = useState<
-    string | undefined
-  >();
+export function ProductGrid({ search, condition }: ProductGridProps) {
+  const [activeCategoryId, setActiveCategoryId] = useState<string | undefined>();
+
+  //Almacena los like de forma local
+  const [likedProducts, setLikedProducts] = useState<string[]>([]);
 
   const [showFilter, setShowFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
+  const searchFilters = useSearchFilters();
+  const effectiveSearch = searchFilters?.search ?? search
+  const effectiveCondition = searchFilters?.condition ?? condition
+
   const { categories, loading: categoriesLoading } = useCategories();
-  const { products, loading: productsLoading } = useProducts({
+  const { products, loading: productsLoading, error } = useProducts({
     categoryId: activeCategoryId,
+    condition: effectiveCondition || undefined,
+    search: effectiveSearch || undefined,
   });
-  const { profile } = useProfile();
-  const { favorites } = useFavorites(profile?.id ?? "");
-  const favoriteIds = new Set(favorites.map((favorite) => favorite.id));
+  const { user } = useUser();
+
+  //Maneja el like de los productos en estado local
+  const insertarLike = (productId: string) => {
+    setLikedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId],
+    );
+  };
 
   //clicks fuera del panel
   useEffect(() => {
@@ -77,8 +61,11 @@ export function ProductGrid() {
 
   return (
     <section className="px-6 py-8 lg:px-40">
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <h2 className="text-xl lg:text-2xl lg:px-4 text-black">Productos</h2>
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-xl lg:text-2xl lg:px-4 text-black">Productos</h2>
+
+        </div>
 
         <div className="flex flex-wrap gap-2 items-center">
           <Button
@@ -93,7 +80,6 @@ export function ProductGrid() {
           >
             Todos
           </Button>
-          {/**categorias visibles */}
           {categories.slice(0, categoryVisibles).map((category) => (
             <Button
               key={category.id}
@@ -109,7 +95,6 @@ export function ProductGrid() {
               {category.name}
             </Button>
           ))}
-          {/* 🏷️Muestra categoría seleccionada si no está en las visibles */}
           {activeCategoryId &&
             !categories
               .slice(0, categoryVisibles)
@@ -139,13 +124,12 @@ export function ProductGrid() {
               </Button>
 
               {showFilter && (
-                <div className="fixed  right-4 top-50 z-50 md:absolute md:left-auto md:right-0 md:top-12 md:w-64 md:fixed-none">
+                <div className="fixed right-4 top-50 z-50 md:absolute md:left-auto md:right-0 md:top-12 md:w-64 md:fixed-none">
                   <FiltroPanel
                     categories={categories.slice(categoryVisibles)}
                     onFilterChange={({ categories: cats }) => {
                       if (cats.length === 1) setActiveCategoryId(cats[0]);
-                      else if (cats.length === 0)
-                        setActiveCategoryId(undefined);
+                      else setActiveCategoryId(undefined);
                     }}
                   />
                 </div>
@@ -155,30 +139,39 @@ export function ProductGrid() {
         </div>
       </div>
 
+      {error && (
+        <p className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Error al cargar productos: {error}
+        </p>
+      )}
+
       {(categoriesLoading || productsLoading) && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
           {[...Array(8)].map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))}
-      
         </div>
       )}
-      {/**productops */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-        {products.map((product) => (
-          <ProductGridItem
-            key={`${product.id}-${favoriteIds.has(product.id) ? "fav" : "plain"}`}
-            product={product}
-            profileId={profile?.id}
-            isInitiallyLiked={favoriteIds.has(product.id)}
-            onClick={(id) => router.push(`/products/${id}`)}
-          />
-        ))}
-      </div>
 
-      {!productsLoading && products.length === 0 && (
+      {!productsLoading && !error && (
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.title}
+              price={product.price ?? 0}
+              image={product.product_images[0]?.url}
+              isLiked={likedProducts.includes(product.id)}
+              onToggleLike={user ? insertarLike : undefined}
+            />
+          ))}
+        </div>
+      )}
+
+      {!productsLoading && !error && products.length === 0 && (
         <p className="mt-6 text-sm lg:text-xl lg:px-5 text-black/60">
-          No hay productos disponibles para esta categoria.
+          No hay productos que coincidan con los filtros.
         </p>
       )}
     </section>

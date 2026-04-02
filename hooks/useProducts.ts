@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/database'
 import type { ProductFull } from './useProduct'
 
-type ProductCondition = Database['public']['Enums']['product_condition']
+export type ProductCondition = Database['public']['Enums']['product_condition']
 
 export interface ProductFilters {
   categoryId?: string
   search?:     string
-  condition?:  ProductCondition  
+  condition?:  ProductCondition
 }
 
 const PAGE_SIZE = 20
@@ -20,6 +20,7 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
   const [products, setProducts] = useState<ProductFull[]>([])
   const [total, setTotal]       = useState(0)
   const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState<string | null>(null)
   
 
   useEffect(() => {
@@ -51,8 +52,10 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
       query = query.eq('condition', filters.condition)
     }
 
-    if (filters.search) {
-      query = query.textSearch('search_vector', filters.search, {
+    const trimmedSearch = filters.search?.trim()
+
+    if (trimmedSearch) {
+      query = query.textSearch('search_vector', trimmedSearch, {
         type:   'websearch',
         config: 'spanish',
       })
@@ -61,11 +64,12 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
   query.then(({ data, count, error }) => {
       if (cancelled) return
       if (!error && data) {
-        console.log('data:', data)
         setProducts(data as ProductFull[])
         setTotal(count ?? 0)
+        setError(null)
+      } else if (error) {
+        setError(error.message)
       }
-      console.log('error:', error)
       setLoading(false)
     })
 
@@ -77,5 +81,5 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
 
   const hasMore = (page + 1) * PAGE_SIZE < total
 
-  return { products, total, hasMore, loading }
+  return { products, total, hasMore, loading, error }
 }
