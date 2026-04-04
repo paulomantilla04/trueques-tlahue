@@ -60,7 +60,7 @@ export function FeaturedProducts() {
             className="object-cover z-10"
             priority
           />
-          <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-3xl px-5 py-3 flex items-center justify-between">
+          <div className="absolute bottom-4 left-4 right-4 z-10 bg-black/50 backdrop-blur-md rounded-3xl px-5 py-3 flex items-center justify-between">
             <div>
               <h3 className="text-white font-semibold text-base lg:text-lg">{main.title}</h3>
               <p className="text-white/90 text-sm">${main.price}</p>

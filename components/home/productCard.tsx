@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RiHeart3Fill, RiHeart3Line } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import { Card, Button } from "@heroui/react";

@@ -98,7 +98,7 @@ export function Header() {
       {searchOverlayOpen && <SearchOverlay onClose={() => setSearchOverlayOpen(false)} />}
 
       {menuOpen && (
-        <div className="absolute top-full right-4 z-50 bg-white shadow-lg rounded-2xl p-4 w-64 flex flex-col gap-4 md:hidden">
+        <div className="absolute top-full right-4 z-40 bg-white shadow-lg rounded-2xl p-4 w-64 flex flex-col gap-4 md:hidden">
           <nav className="flex flex-col gap-3">
             <Link href="/" className="text-black text-lg hover:opacity-70 transition-opacity" onClick={closeMenu}>Inicio</Link>
             <Link href="/catalogo" className="text-black text-lg hover:opacity-70 transition-opacity" onClick={closeMenu}>Catálogo</Link>
