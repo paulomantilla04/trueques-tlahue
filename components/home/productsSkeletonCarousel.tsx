@@ -17,13 +17,6 @@ export function FeaturedProductsSkeleton() {
           </div>
         </div>
 
-        <div className="hidden md:block relative flex-1 rounded-3xl overflow-hidden bg-gray-200 animate-pulse">
-          <div className="absolute bottom-4 left-4 right-4 bg-gray-300 rounded-2xl px-5 py-3 flex flex-col gap-2 animate-pulse">
-            <div className="h-4 w-28 lg:w-36 rounded-full bg-gray-400" />
-            <div className="h-3 w-12 rounded-full bg-gray-400" />
-          </div>
-        </div>
-
       </div>
     </section>
   )
