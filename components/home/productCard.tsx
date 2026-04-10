@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { RiHeart3Fill, RiHeart3Line } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import { Card, Button } from "@heroui/react";
 
@@ -29,7 +29,7 @@ export function ProductCard({ id, name, price, image, isLiked = false, onToggleL
             className={cn("absolute top-3 right-3 w-9 h-9 bg-transparent rounded-full flex items-center justify-center transition-all duration-200", !isLiked && "hover:scale-90")}
             aria-label={isLiked ? "Quitar de favoritos" : "Agregar a favoritos"}
           >
-            {isLiked ? <FaHeart className="w-5 h-5 text-black/60" /> : <FaRegHeart className="w-6 h-6 text-black" />}
+            {isLiked ? <RiHeart3Fill className="w-5 h-5 text-rose-500" style={{ stroke: "black", strokeWidth: 2.5 }} /> : <RiHeart3Line className="w-6 h-6 text-black" />}
           </Button>
         )}
       </div>

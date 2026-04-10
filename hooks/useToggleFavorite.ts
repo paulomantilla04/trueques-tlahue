@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 export function useToggleFavorite(productId: string, profileId: string, initial: boolean) {
-  const supabase          = createClient()
+  const [supabase] = useState(() => createClient())
   const [isFav, setIsFav] = useState(initial)
   const [loading, setLoading] = useState(false)
 

@@ -13,16 +13,16 @@ interface FilterPanelProps {
 }
 
 export function FiltroPanel({ categories, onFilterChange }: FilterPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
 
   const selecionarCategory = (id: string) => {
-    const updated = selectedCategories.includes(id) ? [] : [id];
-    setSelectedCategories(updated);
-    onFilterChange?.({ categories: updated });
+    const updated = selectedCategoryId === id ? undefined : id;
+    setSelectedCategoryId(updated);
+    onFilterChange?.({ categories: updated ? [updated] : [] });
   };
 
   const limpiarCategory = () => {
-    setSelectedCategories([]);
+    setSelectedCategoryId(undefined);
     onFilterChange?.({ categories: [] });
   };
 
@@ -42,8 +42,9 @@ export function FiltroPanel({ categories, onFilterChange }: FilterPanelProps) {
             className="flex items-center gap-3 px-2 py-2 cursor-pointer hover:bg-[#D9D1C7]/20 rounded-xl"
           >
             <input
-              type="checkbox"
-              checked={selectedCategories.includes(category.id)}
+              type="radio"
+              name="category-filter"
+              checked={selectedCategoryId === category.id}
               onChange={() => selecionarCategory(category.id)}
               className="w-4 h-4 cursor-pointer accent-orange-400"
             />

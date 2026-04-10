@@ -45,7 +45,7 @@ export function FeaturedProducts() {
         {/* Carrusel princiapl */}
         <Card className="relative flex-[1.4] md:flex-[1.6] rounded-3xl overflow-hidden border-none shadow-none bg-gray-100">
           <Image
-            src={main.product_images[0]?.url }
+            src={main.product_images[0]?.url}
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 60vw"
@@ -53,31 +53,41 @@ export function FeaturedProducts() {
             aria-hidden
           />
           <Image
-            src={main.product_images[0]?.url }
+            src={main.product_images[0]?.url}
             alt={main.title}
             fill
             sizes="(max-width: 768px) 100vw, 60vw"
-            className="object-contain z-10"
+            className="object-cover z-10"
             priority
           />
-          <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-3xl px-5 py-3 flex items-center justify-between">
+          <div className="absolute bottom-4 left-4 right-4 z-10 bg-black/50 backdrop-blur-md rounded-3xl px-5 py-3 flex items-center justify-between">
             <div>
               <h3 className="text-white font-semibold text-base lg:text-lg">{main.title}</h3>
               <p className="text-white/90 text-sm">${main.price}</p>
             </div>
-            <div className="absolute bottom-5 right-5 flex items-center gap-1.5">
-              <Button isIconOnly size="sm" variant="outline" onPress={prevSlide}
+            <div className="flex items-center gap-1.5">
+              <Button
+                isIconOnly
+                size="sm"
+                variant="outline"
+                onPress={prevSlide}
                 className="w-8 h-8 min-w-8 rounded-full bg-white/20 border-white/40 border-2 backdrop-blur-md text-white/60 hover:scale-90 transition-all duration-300"
-                aria-label="Anterior">
+                aria-label="Anterior"
+              >
                 <FiChevronLeft className="w-4 h-4" />
               </Button>
               <span className="text-white text-xs px-2 font-medium py-1">
                 {currentSlide + 1}/{totalSlides}
               </span>
-              <Button isIconOnly size="sm" variant="outline" onPress={nextSlide}
+              <Button
+                isIconOnly
+                size="sm"
+                variant="outline"
+                onPress={nextSlide}
                 className="w-8 h-8 min-w-8 rounded-full bg-white/20 border-white/40 border-2 backdrop-blur-md text-white/60 hover:scale-90 transition-all duration-300"
-                aria-label="Siguiente">
-                <FiChevronRight className="w-4 h-4 font-extrabold" />
+                aria-label="Siguiente"
+              >
+                <FiChevronRight className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -99,7 +109,7 @@ export function FeaturedProducts() {
               alt={sideProduct.title}
               fill
               sizes="40vw"
-              className="object-contain z-10"
+              className="object-cover z-10"
             />
             <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-2xl px-5 py-3">
               <h3 className="text-white font-semibold text-base lg:text-lg">{sideProduct.title}</h3>

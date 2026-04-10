@@ -163,14 +163,9 @@ export default function AdminPage() {
         <div className="mb-8 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500">
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </span>
-              <h1 className="text-2xl font-bold text-slate-900">Panel de administración</h1>
+              <h1 className="text-2xl font-bold text-slate-900">Panel de administrador</h1>
             </div>
-            <p className="mt-1 text-sm text-slate-500 pl-9">
+            <p className="mt-1 text-sm text-slate-500 pl-2">
               Revisa y aprueba los productos publicados por los usuarios.
             </p>
           </div>
