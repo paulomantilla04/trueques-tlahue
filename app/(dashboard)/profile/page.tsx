@@ -38,7 +38,7 @@ export default function ProfilePage() {
   // Muestra el mensaje y lo limpia solo después de 4 segundos
   const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage(null), 4000);
+    setTimeout(() => setMessage(null), 2000);
   };
 
   const uploadAvatar = async (file: File): Promise<string | null> => {
@@ -112,16 +112,18 @@ export default function ProfilePage() {
     e.preventDefault();
     setIsUpdatingPassword(true);
 
-    const formData = new FormData(e.currentTarget);
+    // Guardar referencia al form ANTES del await, porque después se pierde
+    const formEl = e.currentTarget;
+    const formData = new FormData(formEl);
     const password = formData.get("password")?.toString() || "";
 
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      showMessage("error", "Error al actualizar la contraseña.");
+      showMessage("error", "Error al actualizar la contraseña. Intenta de nuevo.");
     } else {
-      showMessage("success", "Contraseña actualizada con éxito.");
-      (e.target as HTMLFormElement).reset();
+      showMessage("success", "¡Contraseña actualizada con éxito!");
+      formEl.reset();
       setPasswordValue("");
     }
 
