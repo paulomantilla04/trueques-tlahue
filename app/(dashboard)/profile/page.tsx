@@ -18,6 +18,23 @@ import {
   Card,
 } from "@heroui/react";
 
+type Msg = { type: "success" | "error"; text: string } | null;
+
+function InlineMessage({ msg }: { msg: Msg }) {
+  if (!msg) return null;
+  return (
+    <div
+      className={`mt-4 rounded-lg px-4 py-3 text-sm ${
+        msg.type === "error"
+          ? "bg-rose-100 text-rose-600"
+          : "bg-emerald-100 text-emerald-600"
+      }`}
+    >
+      {msg.text}
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const supabase = createClient();
   const { user, loading: userLoading } = useUser();
@@ -25,40 +42,42 @@ export default function ProfilePage() {
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-  const [passwordValue, setPasswordValue] = useState("");
 
-  // Para la preview del avatar antes de subir
+  // Mensajes independientes por card
+  const [profileMsg, setProfileMsg] = useState<Msg>(null);
+  const [passwordMsg, setPasswordMsg] = useState<Msg>(null);
+
+  const [passwordValue, setPasswordValue] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Muestra el mensaje y lo limpia solo después de 4 segundos
-  const showMessage = (type: "success" | "error", text: string) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage(null), 2000);
+  const showProfileMsg = (type: "success" | "error", text: string) => {
+    setProfileMsg({ type, text });
+    setTimeout(() => setProfileMsg(null), 4000);
+  };
+
+  const showPasswordMsg = (type: "success" | "error", text: string) => {
+    setPasswordMsg({ type, text });
+    setTimeout(() => setPasswordMsg(null), 4000);
   };
 
   const uploadAvatar = async (file: File): Promise<string | null> => {
     if (!profile?.id) return null;
-
     const fileExt = file.name.split(".").pop();
     const filePath = `${profile.id}/avatar.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("avatars") // asegúrate de tener este bucket en Supabase
-      .upload(filePath, file, { upsert: true }); // upsert: reemplaza si ya existe
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
 
     if (uploadError) {
       console.error("Error subiendo avatar:", uploadError);
       return null;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath);
 
     return publicUrl;
   };
@@ -70,22 +89,36 @@ export default function ProfilePage() {
     setIsUpdatingProfile(true);
 
     const formData = new FormData(e.currentTarget);
-    const displayName = formData.get("display_name")?.toString().trim() || "";
+    const typedName = formData.get("display_name")?.toString().trim() ?? "";
+
+    // Validar nombre solo si el usuario escribió algo diferente al actual
+    if (typedName.length > 0 && typedName.length < 2) {
+      showProfileMsg("error", "El nombre debe tener al menos 2 caracteres.");
+      setIsUpdatingProfile(false);
+      return;
+    }
+    if (typedName.length > 60) {
+      showProfileMsg("error", "El nombre no puede exceder los 60 caracteres.");
+      setIsUpdatingProfile(false);
+      return;
+    }
+
+    // Si dejó el campo vacío, conservar el nombre actual
+    const displayName = typedName.length > 0 ? typedName : profile.display_name;
     const avatarFile = fileInputRef.current?.files?.[0] ?? null;
 
-    // 1. Si hay imagen nueva, subirla primero
+    // Subir avatar si hay uno nuevo
     let avatarUrl: string | undefined;
     if (avatarFile) {
       const url = await uploadAvatar(avatarFile);
       if (!url) {
-        showMessage("error", "No se pudo subir la foto de perfil.");
+        showProfileMsg("error", "No se pudo subir la foto de perfil.");
         setIsUpdatingProfile(false);
         return;
       }
       avatarUrl = url;
     }
 
-    // 2. Actualizar el perfil en la BD
     const updatePayload: { display_name: string; avatar_url?: string } = {
       display_name: displayName,
     };
@@ -97,10 +130,9 @@ export default function ProfilePage() {
       .eq("id", profile.id);
 
     if (error) {
-      showMessage("error", "Error al actualizar el perfil.");
+      showProfileMsg("error", "Error al actualizar el perfil.");
     } else {
-      showMessage("success", "Perfil actualizado correctamente.");
-      // Limpiar la preview y el input de archivo
+      showProfileMsg("success", "Perfil actualizado correctamente.");
       setAvatarPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -112,7 +144,6 @@ export default function ProfilePage() {
     e.preventDefault();
     setIsUpdatingPassword(true);
 
-    // Guardar referencia al form ANTES del await, porque después se pierde
     const formEl = e.currentTarget;
     const formData = new FormData(formEl);
     const password = formData.get("password")?.toString() || "";
@@ -120,9 +151,9 @@ export default function ProfilePage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      showMessage("error", "Error al actualizar la contraseña. Intenta de nuevo.");
+      showPasswordMsg("error", "Error al actualizar la contraseña. Intenta de nuevo.");
     } else {
-      showMessage("success", "¡Contraseña actualizada con éxito!");
+      showPasswordMsg("success", "¡Contraseña actualizada con éxito!");
       formEl.reset();
       setPasswordValue("");
     }
@@ -136,7 +167,6 @@ export default function ProfilePage() {
     );
   }
 
-  // Avatar a mostrar: preview local > avatar_url de BD > placeholder
   const currentAvatar =
     avatarPreview ?? profile?.avatar_url ?? "/placeholder-avatar.png";
 
@@ -144,19 +174,7 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">Mi Perfil</h1>
 
-      {message && (
-        <div
-          className={`p-4 rounded-lg text-sm transition-all ${
-            message.type === "error"
-              ? "bg-rose-100 text-rose-600"
-              : "bg-emerald-100 text-emerald-600"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-
-      {/* Información pública */}
+      {/* Card — Información pública */}
       <Card className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
         <Form className="w-full" onSubmit={onUpdateProfile}>
           <Fieldset className="w-full">
@@ -179,31 +197,22 @@ export default function ProfilePage() {
                 <Description>El correo electrónico no se puede cambiar.</Description>
               </TextField>
 
-              {/* Nombre — con defaultValue del perfil actual */}
-              <TextField
-                isRequired
-                name="display_name"
-                validate={(value) => {
-                  if (value.trim().length < 2)
-                    return "El nombre debe tener al menos 2 caracteres.";
-                  if (value.trim().length > 60)
-                    return "El nombre no puede exceder los 60 caracteres.";
-                  return null;
-                }}
-              >
+              {/* Nombre — opcional, se conserva el actual si se deja vacío */}
+              <TextField name="display_name">
                 <Label>Nombre a mostrar</Label>
                 <Input
                   placeholder="Tu nombre"
                   variant="secondary"
                 />
+                <Description className="text-xs text-slate-400">
+                  Déjalo igual si no quieres cambiarlo.
+                </Description>
                 <FieldError className="text-rose-600 text-xs" />
               </TextField>
 
               {/* Foto de perfil */}
               <div className="flex flex-col gap-2">
                 <Label className="text-sm font-medium">Foto de Perfil</Label>
-
-                {/* Preview del avatar */}
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 shrink-0">
                     <Image
@@ -225,9 +234,7 @@ export default function ProfilePage() {
                       hover:file:bg-orange-100"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        setAvatarPreview(URL.createObjectURL(file));
-                      }
+                      if (file) setAvatarPreview(URL.createObjectURL(file));
                     }}
                   />
                 </div>
@@ -237,7 +244,10 @@ export default function ProfilePage() {
               </div>
             </FieldGroup>
 
-            <Fieldset.Actions className="mt-6">
+            {/* Mensaje de esta card */}
+            <InlineMessage msg={profileMsg} />
+
+            <Fieldset.Actions className="mt-4">
               <Button
                 type="submit"
                 className="bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600"
@@ -250,7 +260,7 @@ export default function ProfilePage() {
         </Form>
       </Card>
 
-      {/* Seguridad */}
+      {/* Card — Seguridad */}
       <Card className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
         <Form className="w-full" onSubmit={onUpdatePassword}>
           <Fieldset className="w-full">
@@ -293,7 +303,10 @@ export default function ProfilePage() {
               </TextField>
             </FieldGroup>
 
-            <Fieldset.Actions className="mt-6">
+            {/* Mensaje de esta card */}
+            <InlineMessage msg={passwordMsg} />
+
+            <Fieldset.Actions className="mt-4">
               <Button
                 type="submit"
                 className="bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-900"
