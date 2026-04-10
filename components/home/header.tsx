@@ -9,6 +9,8 @@ import {
   RiMessage3Line,
   RiSearchLine,
   RiUserLine,
+  RiHome2Fill,
+  RiHome2Line,
 } from "react-icons/ri"
 import { Button } from "@heroui/react"
 import Image from "next/image"
@@ -17,6 +19,7 @@ import { usePathname } from "next/navigation"
 import { useUser } from "@/hooks/useUser"
 import { SearchOverlay } from "@/components/home/SearchOverlay"
 
+const HOME_PATH = "/"
 const MESSAGES_PATH = "/messages"
 const FAVORITES_PATH = "/favorites"
 
@@ -27,6 +30,7 @@ export function Header() {
   const { user } = useUser()
 
   const userHref = user ? "/dashboard" : "/login"
+  const isHomeActive = pathname === HOME_PATH
   const isMessagesActive = pathname === MESSAGES_PATH
   const isFavoritesActive = pathname === FAVORITES_PATH
 
@@ -36,8 +40,12 @@ export function Header() {
     <header className="relative bg-[#FCF5F1] px-6 py-6 lg:px-38">
       <div className="flex items-center justify-between">
         <nav className="hidden md:flex items-center gap-6 px-16">
-          <Link href="/" className="text-black text-lg hover:opacity-70 transition-opacity">Inicio</Link>
-          <Link href="/catalogo" className="text-black text-lg hover:opacity-70 transition-opacity">Catálogo</Link>
+          <Link href="/" className="text-black text-lg hover:opacity-70 transition-opacity">
+            {isHomeActive ? 
+              <RiHome2Fill className="w-5 h-5 text-orange-500" /> :
+              <RiHome2Line className="w-5 h-5" />
+            }
+          </Link>
         </nav>
 
         <div className="flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
