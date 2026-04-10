@@ -6,15 +6,17 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Card, Button } from "@heroui/react"
 import { useProducts } from "@/hooks/useProducts"
 import { FeaturedProductsSkeleton } from "./productsSkeletonCarousel"
+import { useRouter } from "next/navigation"
+
 
 
 type ProductFull = ReturnType<typeof useProducts>['products'][0]
 
 export function FeaturedProducts() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [sideProduct, setSideProduct] = useState<ProductFull | null>(null)
   const [shuffledProducts, setShuffledProducts] = useState<ProductFull[]>([])
   const { products, loading } = useProducts()
+  const router = useRouter()
 
   useEffect(() => {
     if (products.length > 0) {
@@ -23,9 +25,6 @@ export function FeaturedProducts() {
         .slice(0, 5)
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setShuffledProducts(shuffled)
-
-      const randomIdx = Math.floor(Math.random() * products.length)
-      setSideProduct(products[randomIdx])
     }
   }, [products])
 
@@ -43,7 +42,7 @@ export function FeaturedProducts() {
       <div className="flex gap-4 h-64 sm:h-72 md:h-80 lg:h-96">
 
         {/* Carrusel princiapl */}
-        <Card className="relative flex-[1.4] md:flex-[1.6] rounded-3xl overflow-hidden border-none shadow-none bg-gray-100">
+        <Card className="relative flex-[1.4] md:flex-[1.6] cursor-pointer rounded-3xl overflow-hidden border-none shadow-none bg-gray-100" onClick={() => router.push(`/products/${main.id}`)}>
           <Image
             src={main.product_images[0]?.url}
             alt=""
@@ -92,32 +91,6 @@ export function FeaturedProducts() {
             </div>
           </div>
         </Card>
-
-        {/* Lado derecho */}
-        {sideProduct && (
-          <Card className="hidden md:block relative flex-1 rounded-3xl overflow-hidden border-none shadow-none bg-gray-100">
-            <Image
-              src={sideProduct.product_images[0]?.url}
-              alt=""
-              fill
-              sizes="40vw"
-              className="object-cover scale-110 blur-lg opacity-40"
-              aria-hidden
-            />
-            <Image
-              src={sideProduct.product_images[0]?.url }
-              alt={sideProduct.title}
-              fill
-              sizes="40vw"
-              className="object-cover z-10"
-            />
-            <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/50 backdrop-blur-md rounded-2xl px-5 py-3">
-              <h3 className="text-white font-semibold text-base lg:text-lg">{sideProduct.title}</h3>
-              <p className="text-white/90 text-sm">${sideProduct.price}</p>
-            </div>
-          </Card>
-        )}
-
       </div>
     </section>
   )
