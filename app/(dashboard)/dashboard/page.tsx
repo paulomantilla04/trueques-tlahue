@@ -140,10 +140,10 @@ export default function DashboardPage() {
       try {
         await deleteProduct(selectedProduct.id)
         deleteModal.close() // Solo cerramos si tuvo éxito
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Fallo al eliminar:", err)
         // Aquí a futuro puedes poner un toast de error (ej. toast.error(err.message))
-        alert(err.message) 
+        alert(err instanceof Error ? err.message : "No se pudo eliminar el producto.")
       } finally {
         setDeleting(false) // Siempre quitamos el estado de carga, falle o no
       }

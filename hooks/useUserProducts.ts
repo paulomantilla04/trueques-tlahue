@@ -1,9 +1,20 @@
 import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { dedupeProducts } from "@/lib/product-display"
 import type { Product, ProductFormData } from "@/components/dashboard/types"
 import { useProfile } from "@/hooks/useProfile"
 
-
+type UserProductRow = {
+  id: string
+  category_id: string
+  title: string
+  description: string
+  condition: Product["condition"]
+  status: Product["status"]
+  included_items: string | null
+  price: number | string
+  product_images: { id: string; url: string }[] | null
+}
 
 export function useUserProducts() {
   const supabase = createClient()
@@ -38,7 +49,7 @@ export function useUserProducts() {
 
     if (!error && data) {
       setProducts(
-        data.map((p: any) => ({
+        dedupeProducts((data as UserProductRow[]).map((p) => ({
           id:           p.id,
           categoryId:   p.category_id,
           title:        p.title,
@@ -48,7 +59,7 @@ export function useUserProducts() {
           includedItems: p.included_items ?? "",
           price:        Number(p.price),
           imageUrl:     p.product_images?.[0]?.url ?? "/placeholder-image.jpg",
-        }))
+        })))
       )
     }
 

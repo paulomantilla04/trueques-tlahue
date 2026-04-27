@@ -4,11 +4,13 @@
 
 import Image from "next/image"
 import { useState, useEffect } from "react"
+import type { Product } from "@/components/dashboard/types"
 import { useAdminProducts } from "@/hooks/useAdminProducts"
 import { CONDITION_LABELS } from "@/components/dashboard/constants"
 import { Montserrat } from "next/font/google"
 import { useRouter } from "next/navigation"
 import { useProfile } from "@/hooks/useProfile"
+import { getProductImageUrl } from "@/lib/product-display"
 
 const montserrat = Montserrat({ subsets: ["latin"] })
 
@@ -34,7 +36,7 @@ function ProductCard({
   onApprove,
   onReject,
 }: {
-  product: any
+  product: Product
   onApprove: (id: string) => Promise<void>
   onReject: (id: string) => Promise<void>
 }) {
@@ -60,7 +62,7 @@ function ProductCard({
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <Image
           alt={product.title}
-          src={product.imageUrl}
+          src={getProductImageUrl(product.title, product.imageUrl)}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />

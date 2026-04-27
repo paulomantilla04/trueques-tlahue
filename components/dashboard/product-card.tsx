@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { CONDITION_LABELS } from "@/components/dashboard/constants"
+import { getProductImageUrl } from "@/lib/product-display"
 import type { Product } from "@/components/dashboard/types"
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
@@ -30,15 +30,10 @@ export function ProductCard({
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <Image
           alt={product.title}
-          src={product.imageUrl}
+          src={getProductImageUrl(product.title, product.imageUrl)}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        
-        {/* Condition badge (Left) */}
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm">
-          {CONDITION_LABELS[product.condition]}
-        </span>
 
         {/* Status badge (Right) */}
         <span className={`absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-medium shadow-sm backdrop-blur-sm ${statusConfig.className}`}>
