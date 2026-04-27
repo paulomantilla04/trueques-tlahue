@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { dedupeProducts } from '@/lib/product-display'
 import type { ProductFull } from './useProduct'
 
 export function useFavorites(profileId: string) {
@@ -43,7 +44,7 @@ export function useFavorites(profileId: string) {
           const products = data
             .map(f => f.products)
             .filter(Boolean) as ProductFull[]
-          setFavorites(products)
+          setFavorites(dedupeProducts(products))
         }
         setLoading(false)
       })

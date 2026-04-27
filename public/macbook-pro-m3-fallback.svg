@@ -1,0 +1,20 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#EFE7DD"/>
+  <rect x="170" y="208" width="860" height="548" rx="28" fill="#1F232B"/>
+  <rect x="205" y="242" width="790" height="480" rx="18" fill="url(#screen)"/>
+  <path d="M398 348C456.667 289.333 523.333 260 598 260C672.667 260 739.333 289.333 798 348C738 321.333 671.333 308 598 308C524.667 308 458 321.333 398 348Z" fill="rgba(255,255,255,0.35)"/>
+  <circle cx="600" cy="485" r="122" fill="rgba(255,255,255,0.18)"/>
+  <circle cx="600" cy="485" r="96" fill="rgba(255,255,255,0.12)"/>
+  <path d="M122 766H1078L963 843C952.857 849.781 941.041 853.636 928.84 854H271.16C258.959 853.636 247.143 849.781 237 843L122 766Z" fill="#A7ADB7"/>
+  <path d="M76 753C76 741.954 84.9543 733 96 733H1104C1115.05 733 1124 741.954 1124 753V760C1124 771.046 1115.05 780 1104 780H96C84.9543 780 76 771.046 76 760V753Z" fill="#CED3DB"/>
+  <rect x="494" y="765" width="212" height="18" rx="9" fill="#9AA2AE"/>
+  <rect x="240" y="888" width="720" height="84" rx="42" fill="#E4D8CB"/>
+  <text x="600" y="941" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#5C4B3D">MacBook Pro M3</text>
+  <defs>
+    <linearGradient id="screen" x1="205" y1="242" x2="995" y2="722" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4B5A72"/>
+      <stop offset="0.45" stop-color="#D6A27A"/>
+      <stop offset="1" stop-color="#F7E4C6"/>
+    </linearGradient>
+  </defs>
+</svg>

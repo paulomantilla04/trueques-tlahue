@@ -10,6 +10,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useToggleFavorite } from "@/hooks/useToggleFavorite";
 import { useSearchFilters } from "@/components/home/SearchContext";
+import { getProductImageUrl } from "@/lib/product-display";
 import { Button } from "@heroui/react";
 import { FiltroPanel } from "./filterCategories";
 import { ProductCardSkeleton } from "./productSkeletonCard";
@@ -39,7 +40,7 @@ function ProductGridItem({
       id={product.id}
       name={product.title}
       price={product.price ?? 0}
-      image={product.product_images[0]?.url ?? "/placeholder-image.jpg"}
+      image={getProductImageUrl(product.title, product.product_images[0]?.url)}
       isLiked={isFav}
       onClick={onClick}
       onToggleLike={profileId ? () => void toggle() : undefined}

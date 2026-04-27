@@ -18,6 +18,7 @@ import FavoriteButton from "@/components/product/favorite-button";
 import { Button } from "@heroui/react";
 import ProductDetailedSkeleton from "@/components/product/product-skeleton";
 import SellerCard from "@/components/product/seller-card";
+import { getProductImageUrl } from "@/lib/product-display";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -72,7 +73,7 @@ export default function ProductDetailPage({
     );
   }
 
-  const mainImage = product.product_images?.[0]?.url ?? "/placeholder-user.png";
+  const mainImage = getProductImageUrl(product.title, product.product_images?.[0]?.url);
   const seller = product.profiles;
   const category = product.categories;
   const condition = product.condition;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { dedupeProducts } from '@/lib/product-display'
 import type { Database } from '@/types/database'
 import type { ProductFull } from './useProduct'
 
@@ -24,7 +25,6 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
   
 
   useEffect(() => {
-    console.log(' filters:', filters)  
     let cancelled = false
 
     // Defer the loading flag — same pattern as useProfile
@@ -64,7 +64,7 @@ export function useProducts(filters: ProductFilters = {}, page = 0) {
   query.then(({ data, count, error }) => {
       if (cancelled) return
       if (!error && data) {
-        setProducts(data as ProductFull[])
+        setProducts(dedupeProducts(data as ProductFull[]))
         setTotal(count ?? 0)
         setError(null)
       } else if (error) {

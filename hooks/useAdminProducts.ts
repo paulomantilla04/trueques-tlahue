@@ -1,6 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Product } from "@/components/dashboard/types"
+
+type AdminProductRow = {
+  id: string
+  category_id?: string
+  title: string
+  description: string
+  condition: Product["condition"]
+  status: Product["status"]
+  included_items: string | null
+  price: number | string
+  product_images: { url: string }[] | null
+}
 
 export function useAdminProducts() {
   const supabase = createClient()
@@ -30,7 +42,7 @@ export function useAdminProducts() {
       return
     }
 
-    const mapped: Product[] = (data ?? []).map((p: any) => ({
+    const mapped: Product[] = ((data ?? []) as AdminProductRow[]).map((p) => ({
       id: p.id,
       categoryId: p.category_id,
       title:        p.title,

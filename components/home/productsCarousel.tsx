@@ -5,6 +5,7 @@ import Image from "next/image"
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Card, Button } from "@heroui/react"
 import { useProducts } from "@/hooks/useProducts"
+import { getProductImageUrl } from "@/lib/product-display"
 import { FeaturedProductsSkeleton } from "./productsSkeletonCarousel"
 import { useRouter } from "next/navigation"
 
@@ -33,6 +34,7 @@ export function FeaturedProducts() {
 
   const totalSlides = shuffledProducts.length
   const main = shuffledProducts[currentSlide]
+  const mainImage = getProductImageUrl(main.title, main.product_images[0]?.url)
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides)
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
@@ -44,7 +46,7 @@ export function FeaturedProducts() {
         {/* Carrusel princiapl */}
         <Card className="relative flex-[1.4] md:flex-[1.6] cursor-pointer rounded-3xl overflow-hidden border-none shadow-none bg-gray-100" onClick={() => router.push(`/products/${main.id}`)}>
           <Image
-            src={main.product_images[0]?.url}
+            src={mainImage}
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 60vw"
@@ -52,7 +54,7 @@ export function FeaturedProducts() {
             aria-hidden
           />
           <Image
-            src={main.product_images[0]?.url}
+            src={mainImage}
             alt={main.title}
             fill
             sizes="(max-width: 768px) 100vw, 60vw"
