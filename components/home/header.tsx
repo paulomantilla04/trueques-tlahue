@@ -31,13 +31,14 @@ export function Header() {
 
   const userHref = user ? "/dashboard" : "/login"
   const isHomeActive = pathname === HOME_PATH
-  const isMessagesActive = pathname === MESSAGES_PATH
+  const isMessagesActive = pathname === MESSAGES_PATH || pathname.startsWith(`${MESSAGES_PATH}/`)
   const isFavoritesActive = pathname === FAVORITES_PATH
+  const headerBackgroundClass = isMessagesActive ? "bg-white" : "bg-[#FCF5F1]"
 
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="relative bg-[#FCF5F1] px-6 py-6 lg:px-38">
+    <header className={`relative px-6 py-6 lg:px-38 ${headerBackgroundClass}`}>
       <div className="flex items-center justify-between">
         <nav className="hidden md:flex items-center gap-6 px-16">
           <Link href="/" className="text-black text-lg hover:opacity-70 transition-opacity">

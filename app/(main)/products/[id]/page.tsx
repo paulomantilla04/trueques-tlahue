@@ -1,13 +1,11 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Montserrat } from "next/font/google";
 import {
   RiArrowLeftLine,
-  RiShoppingBag3Line,
-  RiRepeatLine,
   RiPriceTag3Line,
   RiCheckboxCircleLine,
 } from "react-icons/ri";
@@ -15,9 +13,9 @@ import { useProduct } from "@/hooks/useProduct";
 import { useProfile } from "@/hooks/useProfile";
 import { useFavorites } from "@/hooks/useFavorites";
 import FavoriteButton from "@/components/product/favorite-button";
-import { Button } from "@heroui/react";
 import ProductDetailedSkeleton from "@/components/product/product-skeleton";
 import SellerCard from "@/components/product/seller-card";
+import { ProductAction } from "@/components/product/productaction";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -37,7 +35,6 @@ const CONDITION_COLORS: Record<string, string> = {
   poor: "bg-slate-100 text-slate-600",
 };
 
-
 export default function ProductDetailPage({
   params,
 }: {
@@ -48,19 +45,14 @@ export default function ProductDetailPage({
 
   const { product, loading, error } = useProduct(id);
   const { profile } = useProfile();
-
-  // Traemos los favoritos del usuario para saber si este producto ya está guardado
   const { favorites, loading: favLoading } = useFavorites(profile?.id ?? "");
   const isAlreadyFav = favorites.some((f) => f.id === id);
 
-  // Mostramos skeleton mientras carga el producto O los favoritos
   if (loading || favLoading) return <ProductDetailedSkeleton />;
 
   if (error || !product) {
     return (
-      <div
-        className={`min-h-screen bg-[#FCF5F1] flex flex-col items-center justify-center gap-4 ${montserrat.className}`}
-      >
+      <div className={`min-h-screen bg-[#FCF5F1] flex flex-col items-center justify-center gap-4 ${montserrat.className}`}>
         <p className="text-black/50 text-lg">Producto no encontrado.</p>
         <button
           onClick={() => router.back()}
@@ -77,16 +69,12 @@ export default function ProductDetailPage({
   const category = product.categories;
   const condition = product.condition;
   const includedItems = product.included_items
-    ? product.included_items
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
+    ? product.included_items.split(",").map((s) => s.trim()).filter(Boolean)
     : [];
 
   return (
     <div className={`min-h-screen bg-[#FCF5F1] ${montserrat.className}`}>
       <div className="px-6 py-8 lg:px-24 xl:px-40">
-        {/* Back button */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-black/50 hover:text-black transition-colors mb-8 group"
@@ -95,7 +83,6 @@ export default function ProductDetailPage({
           Volver
         </button>
 
-        {/* Main grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16">
           <div className="flex flex-col gap-4">
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-black/5 shadow-sm">
@@ -106,7 +93,6 @@ export default function ProductDetailPage({
                 className="object-cover"
                 priority
               />
-
               <FavoriteButton
                 productId={product.id}
                 profileId={profile?.id}
@@ -137,11 +123,7 @@ export default function ProductDetailPage({
                     {category.name}
                   </span>
                 )}
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    CONDITION_COLORS[condition] ?? "bg-slate-100 text-slate-600"
-                  }`}
-                >
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${CONDITION_COLORS[condition] ?? "bg-slate-100 text-slate-600"}`}>
                   {CONDITION_LABELS[condition] ?? condition}
                 </span>
               </div>
@@ -174,10 +156,7 @@ export default function ProductDetailPage({
                 </p>
                 <ul className="flex flex-col gap-1.5">
                   {includedItems.map((item, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-sm text-black/70"
-                    >
+                    <li key={i} className="flex items-center gap-2 text-sm text-black/70">
                       <RiCheckboxCircleLine className="w-4 h-4 text-orange-400 shrink-0" />
                       {item}
                     </li>
@@ -192,22 +171,14 @@ export default function ProductDetailPage({
                   id: seller.id,
                   display_name: seller.display_name,
                   avatar_url: seller.avatar_url,
-                  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   created_at: (seller as any).created_at,
                 }}
               />
             )}
 
-            <div className="flex gap-3 mt-auto">
-              <Button size="lg" className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white font-semibold py-4 text-sm transition-all duration-150 shadow-sm shadow-orange-200">
-                <RiShoppingBag3Line className="w-5 h-5" />
-                Comprar
-              </Button>
-              <Button size="lg" className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-black/10 bg-white/70 hover:bg-white active:scale-[0.98] text-black/80 hover:text-black font-semibold py-4 text-sm transition-all duration-150">
-                <RiRepeatLine className="w-5 h-5" />
-                Truequear
-              </Button>
-            </div>
+            {/* ← reemplaza todo el bloque de botones anterior */}
+            <ProductAction product={product} />
           </div>
         </div>
       </div>

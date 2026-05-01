@@ -1,7 +1,16 @@
+"use client"
+
+import { MessagesView } from "@/components/mensa/messages-view"
+
+
+
 export default function MessagesPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FCF5F1]">
-      <h1>Mensajes</h1>
+  return(
+    <div className="bg-white">
+        <MessagesView />
+
     </div>
-  )
+
+) 
+    
 }
