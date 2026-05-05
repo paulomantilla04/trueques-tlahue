@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useProfile } from "@/hooks/useProfile"
+import { toast } from "react-hot-toast"
 import type { Database } from "@/types/database"
 
 type OfferType = Database["public"]["Enums"]["offer_type"]
@@ -78,6 +79,7 @@ export function useCreateOffer() {
 
       if (message.includes("A seller cannot make an offer")) {
         setError("No puedes hacer una oferta por tu propio producto.")
+        toast.error("No puedes hacer una oferta por tu propio producto.")
       } else {
         setError("Hubo un error al iniciar la conversaciÃ³n. IntÃ©ntalo de nuevo.")
       }

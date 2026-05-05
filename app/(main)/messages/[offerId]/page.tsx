@@ -1,7 +1,7 @@
 "use client"
 
 import { use } from "react"
-import { MessagesView } from "@/components/mensa/messages-view"
+import { MessagesView } from "@/components/messages/messages-view"
 
 export default function ChatPage({
   params,

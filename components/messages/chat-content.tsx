@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { RiSendPlaneLine } from "react-icons/ri"
+import { RiSendPlaneLine, RiArrowLeftLine } from "react-icons/ri"
 import { format } from "date-fns"
 
 import { useMessages } from "@/hooks/useMessages"
@@ -23,9 +23,10 @@ interface ChatContentProps {
       image: string
     }
   } | null
+  onBack?: () => void
 }
 
-export function ChatContent({ selectedChat }: ChatContentProps) {
+export function ChatContent({ selectedChat, onBack }: ChatContentProps) {
   const [newMessage, setNewMessage] = useState("")
   
 
@@ -53,11 +54,11 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
   if (!selectedChat) {
     return (
       <main className="flex-1 p-4 bg-white">
-        <div className="flex gap-4 h-[calc(100vh-92px)]">
-          <div className="flex-2 bg-[#d9e4c9] rounded-2xl flex items-center justify-center">
+        <div className="flex flex-col md:flex-row gap-4 h-[calc(100dvh-92px)]">
+          <div className="flex-1 md:flex-[2] bg-[#d9e4c9] rounded-2xl flex items-center justify-center">
             <p className="text-muted-foreground">Selecciona un chat para comenzar</p>
           </div>
-          <div className="flex-1 bg-[#d9e4c9] rounded-2xl" />
+          <div className="hidden md:block flex-1 bg-[#d9e4c9] rounded-2xl" />
         </div>
       </main>
     )
@@ -65,11 +66,20 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
 
   return (
     <main className="flex-1 p-4 bg-white">
-      <div className="flex gap-4 h-[calc(100vh-92px)]">
+      <div className="flex flex-col md:flex-row gap-4 h-[calc(100dvh-92px)]">
         {/* Chat messages box */}
-        <div className="flex-2 bg-orange-300 rounded-2xl flex flex-col">
+        <div className="flex-1 md:flex-[2] bg-orange-300 rounded-2xl flex flex-col min-h-0">
           {/* Chat header */}
           <div className="flex items-center gap-3 p-4 border-b border-[#c5d4b5]">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="md:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-orange-200 transition-colors"
+                aria-label="Volver a chats"
+              >
+                <RiArrowLeftLine className="w-5 h-5 text-foreground" />
+              </button>
+            )}
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
               <Image
                 src={selectedChat.avatar}
@@ -84,10 +94,10 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar min-h-0">
             {messages.map((message) => {
-         
-              const isYou = message.sender_id === profile?.id
+
+               const isYou = message.sender_id === profile?.id
 
               return (
                 <div
@@ -115,11 +125,11 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
                 </div>
               )
             })}
-       
+
             <div ref={bottomRef} />
           </div>
 
-      
+
           <div className="p-4 border-t border-[#c5d4b5]">
             <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2">
               <input
@@ -132,7 +142,7 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
               />
               <button
                 onClick={handleSendMessage}
-                className="w-8 h-8 bg-orange-300 rounded-full flex items-center justify-center hover:bg-orange-200 transition-colors"
+                className="w-8 h-8 bg-orange-300 rounded-full flex items-center justify-center hover:bg-orange-200 transition-colors shrink-0"
               >
                 <RiSendPlaneLine className="w-4 h-4 text-white" />
               </button>
@@ -140,17 +150,18 @@ export function ChatContent({ selectedChat }: ChatContentProps) {
           </div>
         </div>
 
-
-        <InfoBox
-          image={selectedChat.product.image}
-          title={selectedChat.product.title}
-          condition={selectedChat.product.condition}
-          header="Producto en trueque"
-          imageCliente={selectedChat.avatar}
-          nombreCliente={selectedChat.name}
-          estadoCliente="activo"
-          headerCliente="Usuario"
-        />
+        <div className="hidden md:block flex-1 min-h-0">
+          <InfoBox
+            image={selectedChat.product.image}
+            title={selectedChat.product.title}
+            condition={selectedChat.product.condition}
+            header="Producto en trueque"
+            imageCliente={selectedChat.avatar}
+            nombreCliente={selectedChat.name}
+            estadoCliente="activo"
+            headerCliente="Usuario"
+          />
+        </div>
 
       </div>
     </main>

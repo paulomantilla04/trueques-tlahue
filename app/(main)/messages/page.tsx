@@ -1,6 +1,6 @@
 "use client"
 
-import { MessagesView } from "@/components/mensa/messages-view"
+import { MessagesView } from "@/components/messages/messages-view"
 
 
 

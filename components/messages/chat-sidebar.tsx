@@ -17,14 +17,15 @@ interface ChatSidebarProps {
   chats: Chat[]
   selectedChat: string | null
   onSelectChat: (id: string) => void
+  className?: string
 }
 
-export function ChatSidebar({ chats, selectedChat, onSelectChat }: ChatSidebarProps) {
+export function ChatSidebar({ chats, selectedChat, onSelectChat, className = "" }: ChatSidebarProps) {
   return (
-   <aside className="w-56 bg-card flex flex-col overflow-hidden shrink-0 h-full bg-orange-300">
+   <aside className={`bg-card flex flex-col overflow-hidden shrink-0 h-full bg-orange-200 ${className}`}>
   <h2 className="text-2xl font-bold text-primary p-4 pb-2 shrink-0">Chats</h2>
   
-  <div className="relative flex-1 min-h-0 bg-orange-300"> 
+  <div className="relative flex-1 min-h-0 bg-orange-200"> 
     <div className="h-full overflow-y-auto px-4 pb-4 space-y-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {chats.map((chat) => (
         <button
@@ -32,7 +33,7 @@ export function ChatSidebar({ chats, selectedChat, onSelectChat }: ChatSidebarPr
           onClick={() => onSelectChat(chat.id)}
           className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${
             selectedChat === chat.id
-              ? "bg-orange-400 text-white shadow-md"
+              ? "bg-orange-300 text-white shadow-md"
               : "hover:bg-orange-200"
           }`}
         >
