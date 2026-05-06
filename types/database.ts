@@ -22,6 +22,7 @@ export type Database = {
           offer_id: string
           owner_id: string
           title: string
+          image_url: string | null
         }
         Insert: {
           description?: string | null
@@ -30,6 +31,7 @@ export type Database = {
           offer_id: string
           owner_id: string
           title: string
+          image_url?: string | null
         }
         Update: {
           description?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           offer_id?: string
           owner_id?: string
           title?: string
+          image_url?: string | null
         }
         Relationships: [
           {
@@ -387,6 +390,7 @@ export type Database = {
           id: string
           title: string
           transaction_id: string
+          image_url: string | null
         }
         Insert: {
           barter_item_id?: string | null
@@ -395,6 +399,7 @@ export type Database = {
           id?: string
           title: string
           transaction_id: string
+          image_url?: string | null
         }
         Update: {
           barter_item_id?: string | null
@@ -403,6 +408,7 @@ export type Database = {
           id?: string
           title?: string
           transaction_id?: string
+          image_url?: string | null
         }
         Relationships: [
           {
@@ -499,6 +505,10 @@ export type Database = {
         Returns: string
       }
       auth_profile_id: { Args: never; Returns: string }
+      cancel_accepted_offer: {
+        Args: { p_actor_id: string; p_offer_id: string }
+        Returns: undefined
+      }
       cancel_offer: {
         Args: { p_actor_id: string; p_offer_id: string }
         Returns: undefined
@@ -561,6 +571,7 @@ export type Database = {
         title: string | null
         description: string | null
         estimated_value: number | null
+        image_url: string | null
       }
     }
   }

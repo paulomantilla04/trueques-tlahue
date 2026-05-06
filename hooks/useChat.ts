@@ -10,8 +10,10 @@ export type ChatListItem = {
   avatar: string
   lastMessage: string
   isYou: boolean
-
-
+  timestamp: number
+  status: string
+  type: string
+  isBuyer: boolean
   product: {
     title: string
     condition: string
@@ -55,6 +57,9 @@ const { data, error } = await supabase
         .select(`
           id,
           buyer_id,
+          type,
+          status,
+          created_at,
           product:products (
             seller_id,
             title,           
@@ -99,9 +104,12 @@ const { data, error } = await supabase
             offerId: offer.id,
             name: otherPerson?.display_name || "Usuario",
             avatar: otherPerson?.avatar_url || `https://ui-avatars.com/api/?name=${otherPerson?.display_name || 'U'}&background=f97316&color=fff`,
-            lastMessage: lastMsg?.body || "Sin mensajes",
-            isYou: lastMsg?.sender_id === myProfileId, // Corregido
-            timestamp: lastMsg ? new Date(lastMsg.sent_at).getTime() : 0,
+            lastMessage: lastMsg?.body || (isBuyer ? "Esperando respuesta del vendedor..." : "¡Tienes una nueva oferta!"),
+            isYou: lastMsg?.sender_id === myProfileId,
+            timestamp: lastMsg ? new Date(lastMsg.sent_at).getTime() : new Date(offer.created_at).getTime(),
+            status: offer.status,
+            type: offer.type,
+            isBuyer,
             product: {
               title: offer.product?.title || "Producto no disponible",
               condition: offer.product?.condition || "unknown",
@@ -109,7 +117,6 @@ const { data, error } = await supabase
             }
           }
         })
-        .filter((chat) => chat.lastMessage !== "Sin mensajes")
         .sort((a, b) => b.timestamp - a.timestamp)
 
       if (!cancelled) {

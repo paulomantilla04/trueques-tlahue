@@ -7,6 +7,7 @@ import { RiShoppingBag3Line, RiRepeatLine, RiLoader4Line } from "react-icons/ri"
 import { useCreateOffer } from "@/hooks/useCreateOffer"
 import { useProfile } from "@/hooks/useProfile"
 import type { Database } from "@/types/database"
+import { CreateOfferModal } from "@/components/product/create-offer-modal"
 
 type OfferType = Database['public']['Enums']['offer_type']
 
@@ -25,6 +26,7 @@ export const ProductAction = ({ product }: ProductActionProps) => {
   const router = useRouter()
   const { loading: profileLoading } = useProfile()
   const { startChat } = useCreateOffer()
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
 
  const handleMakerOffer = async () => {
   if (sending || profileLoading) return
@@ -89,6 +91,8 @@ export const ProductAction = ({ product }: ProductActionProps) => {
         </Button>
 
         <Button
+          onPress={() => setIsOfferModalOpen(true)}
+          isDisabled={sending || profileLoading}
           size="lg"
           className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-black/10 bg-white/70 hover:bg-white active:scale-[0.98] text-black/80 hover:text-black font-semibold py-4 text-sm transition-all duration-150"
         >
@@ -96,6 +100,12 @@ export const ProductAction = ({ product }: ProductActionProps) => {
           Truequear
         </Button>
       </div>
+
+      <CreateOfferModal
+        isOpen={isOfferModalOpen}
+        onClose={() => setIsOfferModalOpen(false)}
+        product={product}
+      />
     </>
   )
 }
